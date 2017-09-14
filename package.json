@@ -12,5 +12,8 @@
     "webpack": "^3.6.0"
   },
   "author": "The serverless webpack authors (https://github.com/elastic-coders/serverless-webpack)",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "firebase-admin": "^5.8.0"
+  }
 }

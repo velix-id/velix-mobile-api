@@ -38,18 +38,18 @@ functions:
       - http:
           method: get
           path: generate
-  requestAuth:
-    handler: fn/requestAuth.invoke
+  authsForVelixID:
+    handler: fn/velixid.invoke
     events:
       - http:
-          method: put
-          path: auth
-  replyAuth:
-    handler: fn/replyAuth.invoke
+          method: any
+          path: /v/{velixid}/auths
+  authForVelixID:
+    handler: fn/auths.invoke
     events:
       - http:
-          method: post
-          path: auth/{authid}/respond
+          method: any
+          path: auth/{authid}
 resources:
   Resources:
     MappingTable:

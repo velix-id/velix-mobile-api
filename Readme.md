@@ -1,4 +1,11 @@
 # Velix ID Mobile API
+```
+  GET       - https://3phw6ramn5.execute-api.us-east-1.amazonaws.com/dev/generate
+
+  GET|PUT   - https://3phw6ramn5.execute-api.us-east-1.amazonaws.com/dev/v/{velixid}/auths
+  
+  GET|POST  - https://3phw6ramn5.execute-api.us-east-1.amazonaws.com/dev/auth/{authid}
+```
 
 Platfrom: ```AWS Lambda with NodeJS```
 
@@ -8,11 +15,18 @@ Endpoint : ```https://3phw6ramn5.execute-api.us-east-1.amazonaws.com/dev```
 
 ### Generate New Velix ID
 
-```GET - /generate```
+```PUT - /generate```
 
-### Create new Authorization
+### Get All Authorizations for a VelixID
 
-```PUT - /auth```
+```GET - /v/{velixid}/auths```
+
+**Query Parameters:**
+- status - { new | canceled | rejected | accepted }
+
+### Create new Authorization for a Velix ID
+
+```PUT - /v/{velixid}/auths```
 
 ### Get Authorization Status / Detail
 
@@ -20,4 +34,4 @@ Endpoint : ```https://3phw6ramn5.execute-api.us-east-1.amazonaws.com/dev```
 
 ### Respond to an existing Authorization
 
-```POST - /auth/{authid}/respond```
+```POST - /auth/{authid}```
