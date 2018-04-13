@@ -1,16 +1,17 @@
 service:
-  name: velixid-mobile-api
+  name: velixid-mobile-app-api
 
 # Add the serverless-webpack plugin
 plugins:
   - serverless-webpack
-
+  - serverless-offline
 provider:
   name: aws
   runtime: nodejs6.10
   environment:
-      VELIXID_MAPING_TABLE: ${self:service}-MAPING-${opt:stage, self:provider.stage}
-      VELIXID_AUTHS_TABLE: ${self:service}-AUTHS-${opt:stage, self:provider.stage}
+      VELIXID_MAPPING_TABLE: VELIXID-MAPPING
+      VELIXID_AUTHS_TABLE: VELIXID-AUTHS
+      VELIXID_PARTNERS_TABLE: VELIXID-PARTNER
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -20,7 +21,7 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.VELIXID_MAPING_TABLE}"
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.VELIXID_MAPPING_TABLE}"
     - Effect: Allow
       Action:
         - dynamodb:Query
@@ -30,26 +31,52 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.VELIXID_AUTHS_TABLE}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.VELIXID_PARTNERS_TABLE}"
 
 functions:
   generateVelixID:
     handler: fn/generate.invoke
     events:
       - http:
-          method: get
+          method: post
           path: generate
-  authsForVelixID:
-    handler: fn/velixid.invoke
+          cors: true
+  newAuthForVelixID:
+    handler: fn/newAuthRequest.invoke
     events:
       - http:
-          method: any
+          method: post
           path: /v/{velixid}/auths
-  authForVelixID:
-    handler: fn/auths.invoke
+          cors: true
+  allAuthsForVelixID:
+    handler: fn/allAuthRequests.invoke
     events:
       - http:
-          method: any
+          method: get
+          path: /v/{velixid}/auths
+          cors: true
+  getAuthDetails:
+    handler: fn/getAuth.invoke
+    events:
+      - http:
+          method: get
           path: auth/{authid}
+          cors: true
+  updateAuthDetails:
+    handler: fn/updateAuth.invoke
+    events:
+      - http:
+          method: post
+          path: auth/{authid}
+          cors: true
 resources:
   Resources:
     MappingTable:
@@ -58,32 +85,38 @@ resources:
       Properties:
         AttributeDefinitions:
           -
-            AttributeName: "VID"
+            AttributeName: "vid"
+            AttributeType: "S"   
+          -
+            AttributeName: "pubkey"
             AttributeType: "S"   
         KeySchema:
           -
-            AttributeName: "VID"
+            AttributeName: "vid"
             KeyType: "HASH"
+          -
+            AttributeName: "pubkey"
+            KeyType: "RANGE"
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         StreamSpecification:
           StreamViewType: "NEW_AND_OLD_IMAGES"
-        TableName: ${self:provider.environment.VELIXID_MAPING_TABLE}
+        TableName: ${self:provider.environment.VELIXID_MAPPING_TABLE}
     AuthorizationTable:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain
       Properties:
         AttributeDefinitions:
           -
-            AttributeName: "VID"
+            AttributeName: "vid"
             AttributeType: "S"   
           -
             AttributeName: "AUTH_REQUEST_ID"
             AttributeType: "S"   
         KeySchema:
           -
-            AttributeName: "VID"
+            AttributeName: "vid"
             KeyType: "HASH"
           -
             AttributeName: "AUTH_REQUEST_ID"
@@ -94,3 +127,21 @@ resources:
         StreamSpecification:
           StreamViewType: "NEW_AND_OLD_IMAGES"
         TableName: ${self:provider.environment.VELIXID_AUTHS_TABLE}
+    PartnersTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: "vid"
+            AttributeType: "S"
+        KeySchema:
+          -
+            AttributeName: "vid"
+            KeyType: "HASH"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        StreamSpecification:
+          StreamViewType: "NEW_AND_OLD_IMAGES"
+        TableName: ${self:provider.environment.VELIXID_PARTNERS_TABLE}
