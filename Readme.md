@@ -1,37 +1,9 @@
 # Velix ID Mobile API
-```
-  GET       - https://3phw6ramn5.execute-api.us-east-1.amazonaws.com/dev/generate
 
-  GET|PUT   - https://3phw6ramn5.execute-api.us-east-1.amazonaws.com/dev/v/{velixid}/auths
-  
-  GET|POST  - https://3phw6ramn5.execute-api.us-east-1.amazonaws.com/dev/auth/{authid}
-```
+Core API Used By Velix.ID Apps and Integrations
 
 Platfrom: ```AWS Lambda with NodeJS```
 
-Endpoint : ```https://3phw6ramn5.execute-api.us-east-1.amazonaws.com/dev```
+Endpoint : ```https://api.velix.id```
 
-## API Methods
-
-### Generate New Velix ID
-
-```PUT - /generate```
-
-### Get All Authorizations for a VelixID
-
-```GET - /v/{velixid}/auths```
-
-**Query Parameters:**
-- status - { new | canceled | rejected | accepted }
-
-### Create new Authorization for a Velix ID
-
-```PUT - /v/{velixid}/auths```
-
-### Get Authorization Status / Detail
-
-```GET - /auth/{authid}```
-
-### Respond to an existing Authorization
-
-```POST - /auth/{authid}```
+[See Docs Here](https://documenter.getpostman.com/view/5534/RWM9upvz)
