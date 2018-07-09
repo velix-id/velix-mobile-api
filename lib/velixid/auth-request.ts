@@ -1,7 +1,9 @@
-import { VelixIDKey } from "./key";
+import {VelixIDKey} from "./key";
 
 let AWS = require("aws-sdk");
-AWS.config.update({ region: "us-east-1" });
+AWS
+  .config
+  .update({region: "us-east-1"});
 
 const AUTHS_TABLE = "VELIXID-AUTHS";
 
@@ -13,23 +15,23 @@ export enum VelixIDAuthRequestStatus {
 }
 
 export class VelixIDAuthRequest {
-  requestID: string;
-  to: VelixIDKey;
-  from: VelixIDKey;
-  partner: {
+  requestID : string;
+  to : VelixIDKey;
+  from : VelixIDKey;
+  partner : {
     name: string,
     logo: string
   };
-  type: string;
-  createdOn: number;
-  updateOn: number;
-  status: VelixIDAuthRequestStatus;
-  response: {
+  type : string;
+  createdOn : number;
+  updateOn : number;
+  status : VelixIDAuthRequestStatus;
+  response : {
     requestAccepted: boolean;
     data: any;
   };
 
-  static loadRequest(requestID: string, cb: Function): any {
+  static loadRequest(requestID : string, cb : Function) : any {
     // JM88WRIB-TKJYZHRS-1523207582145
     let requestParams = requestID.split("-");
 
@@ -41,9 +43,10 @@ export class VelixIDAuthRequest {
       }
     };
 
-    let docClient = new AWS.DynamoDB.DocumentClient();
-    console.log("Params", params);
-    
+    let docClient = new AWS
+      .DynamoDB
+      .DocumentClient();
+
     docClient.get(params, (err, doc) => {
       if (err) {
         cb(err, null);
@@ -53,8 +56,7 @@ export class VelixIDAuthRequest {
     });
   }
 
-  constructor(data: any = null) {
-    console.log("Request", data, this);
+  constructor(data : any = null) {
     if (data) {
       this.createdOn = data.createdOn;
       this.from = new VelixIDKey(data.from);
@@ -74,7 +76,7 @@ export class VelixIDAuthRequest {
 
   }
 
-  update(newStatus: VelixIDAuthRequestStatus, data: any, cb: Function) {
+  update(newStatus : VelixIDAuthRequestStatus, data : any, cb : Function) {
     let now = Date.now();
     let params = {
       TableName: AUTHS_TABLE,
@@ -98,7 +100,9 @@ export class VelixIDAuthRequest {
       }
     };
 
-    let docClient = new AWS.DynamoDB.DocumentClient();
+    let docClient = new AWS
+      .DynamoDB
+      .DocumentClient();
     docClient.update(params, (err, doc) => {
       if (err) {
         throw "ERROR: " + err.message;
@@ -111,7 +115,7 @@ export class VelixIDAuthRequest {
     });
   }
 
-  toJSON(): any {
+  toJSON() : any {
     let pObj = {
       name: this.partner.name
     };
@@ -126,7 +130,9 @@ export class VelixIDAuthRequest {
       type: this.type,
       createdOn: this.createdOn,
       updateOn: this.updateOn,
-      status: this.status.toString(),
+      status: this
+        .status
+        .toString(),
       response: {
         requestAccepted: this.response.requestAccepted,
         data: this.response.data

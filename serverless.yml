@@ -40,8 +40,19 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.VELIXID_PARTNERS_TABLE}"
-
+    - Effect: Allow
+      Action:
+        - ses:SendEmail
+        - ses:SendRawEmail
+      Resource: "*"
 functions:
+  validateVelixID:
+    handler: fn/validate.invoke
+    events:
+      - http:
+          method: post
+          path: validate
+          cors: true
   generateVelixID:
     handler: fn/generate.invoke
     events:
@@ -77,6 +88,33 @@ functions:
           method: post
           path: auth/{authid}
           cors: true
+  popupLogin:
+    handler: fn/popup/login.invoke
+    events:
+      - http:
+          method: get
+          path: popup/login/{partnerid}
+  loginSubmit:
+    handler: fn/loginSubmit.invoke
+    events:
+      - http:
+          method: post
+          path: popup/login/{partnerid}
+  reviewTxn:
+    handler: fn/reviewTxn.invoke
+    events:
+      - http:
+          method: get
+          path: popup/login/{partnerid}/{txnid}
+  vxdInfo:
+    handler: fn/vxdInfo.invoke
+    events:
+      - http:
+          method: any
+          path: vxd/{type}/{address}
+      - http:
+          method: any
+          path: vxd/{type}
 resources:
   Resources:
     MappingTable:

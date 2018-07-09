@@ -14,6 +14,7 @@ export const invoke = (event, context, cb) => {
       let fields = [];
       switch (request.type) {
         case "basic": 
+        case "login": 
         fields.push({
           name: 'name',
           label: 'Name'
