@@ -1,10 +1,5 @@
 import {VelixIDKey} from "./key";
-
-let AWS = require("aws-sdk");
-
-AWS
-    .config
-    .update({region: "us-east-1"});
+const Dynamodb = require('serverless-dynamodb-client');
 
 const PARTNERS_TABLE = "VELIXID-PARTNER";
 
@@ -28,11 +23,7 @@ export class VelixIDPartner {
             }
         };
 
-        let docClient = new AWS
-            .DynamoDB
-            .DocumentClient();
-
-        docClient.query(query, (err, doc) => {
+        Dynamodb.doc.query(query, (err, doc) => {
             if (err) {
                 cb(err, doc);
             } else if (doc.Items && doc.Items.length) {
