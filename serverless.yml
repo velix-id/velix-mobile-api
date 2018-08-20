@@ -4,6 +4,7 @@ service:
 # Add the serverless-webpack plugin
 plugins:
   - serverless-webpack
+  - serverless-dynamodb-local
   - serverless-offline
 provider:
   name: aws
@@ -183,3 +184,12 @@ resources:
         StreamSpecification:
           StreamViewType: "NEW_AND_OLD_IMAGES"
         TableName: ${self:provider.environment.VELIXID_PARTNERS_TABLE}
+custom:
+  dynamodb:
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+    # seed: true
+    # Uncomment only if you already have a DynamoDB running locally
+    # noStart: true

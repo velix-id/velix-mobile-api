@@ -1,9 +1,5 @@
 import {VelixIDKey} from "./key";
-
-let AWS = require("aws-sdk");
-AWS
-  .config
-  .update({region: "us-east-1"});
+const Dynamodb = require('serverless-dynamodb-client');
 
 const AUTHS_TABLE = "VELIXID-AUTHS";
 
@@ -43,11 +39,7 @@ export class VelixIDAuthRequest {
       }
     };
 
-    let docClient = new AWS
-      .DynamoDB
-      .DocumentClient();
-
-    docClient.get(params, (err, doc) => {
+    Dynamodb.doc.get(params, (err, doc) => {
       if (err) {
         cb(err, null);
       } else {
@@ -100,10 +92,7 @@ export class VelixIDAuthRequest {
       }
     };
 
-    let docClient = new AWS
-      .DynamoDB
-      .DocumentClient();
-    docClient.update(params, (err, doc) => {
+    Dynamodb.doc.update(params, (err, doc) => {
       if (err) {
         throw "ERROR: " + err.message;
       } else {

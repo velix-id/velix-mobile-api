@@ -1,10 +1,6 @@
 import {VelixIDAuthRequest, VelixIDAuthRequestStatus} from "./auth-request";
 import {Email} from "../helpers/email";
-
-let AWS = require("aws-sdk");
-AWS
-  .config
-  .update({region: "us-east-1"});
+const Dynamodb = require('serverless-dynamodb-client');
 
 const AUTHS_TABLE = "VELIXID-AUTHS";
 const MAPPING_TABLE = "VELIXID-MAPPING";
@@ -32,11 +28,7 @@ export class VelixIDKey {
       }
     };
 
-    let docClient = new AWS
-      .DynamoDB
-      .DocumentClient();
-
-    docClient.put(params, (err, doc) => {
+    Dynamodb.doc.put(params, (err, doc) => {
       if (err) {
         throw "ERROR: " + err.message;
       } else {
@@ -68,11 +60,7 @@ export class VelixIDKey {
         }
       };
 
-      let docClient = new AWS
-        .DynamoDB
-        .DocumentClient();
-
-      docClient.put(params, (err, doc) => {
+      Dynamodb.doc.put(params, (err, doc) => {
         if (err) {
           throw "ERROR: " + err.message;
         } else {
@@ -87,16 +75,11 @@ export class VelixIDKey {
   velixID : string;
   publicKey : string;
 
-  docClient : any;
-
   /**
    * Consturctor for VelixIDKey
    */
   constructor(velixID : string) {
     this.velixID = velixID;
-    this.docClient = new AWS
-      .DynamoDB
-      .DocumentClient();
   }
 
   /**
@@ -114,9 +97,7 @@ export class VelixIDKey {
 
     console.log('query', query);
 
-    this
-      .docClient
-      .query(query, (err, doc) => {
+    Dynamodb.doc.query(query, (err, doc) => {
         if (err) {
           cb(err, doc);
         } else if (doc.Items && doc.Items.length) {
@@ -158,9 +139,7 @@ export class VelixIDKey {
       Item: request.toJSON()
     };
 
-    this
-      .docClient
-      .put(params, (err, doc) => {
+    Dynamodb.doc.put(params, (err, doc) => {
         if (err) {
           throw "ERROR: " + err.message;
         } else {
